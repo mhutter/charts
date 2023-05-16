@@ -1,0 +1,64 @@
+# Default values for vaultwarden.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# The domain the vaultwarden instance is reachable under.
+# Will be used both to configure vaultwarden and the ingress resource.
+domain: ""
+
+# The administrator token
+adminToken: ""
+
+# SMTP configuration for outgoing emails
+smtp:
+  from: ""
+  host: ""
+  port: "587"
+  security: "starttls"
+  username: ""
+  password: ""
+
+storage:
+  # Amount of storage to request
+  size: 1Gi
+  # Optional storage class to use
+  class: ""
+
+image:
+  repository: docker.io/vaultwarden/server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+ingress:
+  # Whether to create an Ingress resource
+  enabled: true
+  # Optional ingress class name
+  className: ""
+  annotations: {}
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+# Optional resource requests & limits; some recommendations are below
+resources: {}
+  # requests:
+  #   cpu: 10m
+  #   memory: 50Mi
+  # limits:
+  #   cpu: '2'
+  #   memory: 1Gi
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # Optional name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template.
+  name:
+
+# Service configuration; mostly in here for convienience, you should not have to touch them
+service:
+  http:
+    port: 3000
+  ws:
+    port: 3012

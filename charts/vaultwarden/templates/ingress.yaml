@@ -1,0 +1,35 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "vaultwarden.fullname" . }}
+  labels:
+    {{- include "vaultwarden.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ include "vaultwarden.domain" . }}
+      http:
+        paths:
+          - pathType: Exact
+            path: /notifications/hub
+            backend:
+              service:
+                name: vaultwarden
+                port:
+                  name: ws
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: vaultwarden
+                port:
+                  name: http
+  tls:
+    - secretName: {{ include "vaultwarden.fullname" . }}-tls-cert
+      hosts:
+        - {{ include "vaultwarden.domain" . }}
+{{- end }}
