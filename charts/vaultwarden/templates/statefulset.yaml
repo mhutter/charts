@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "vaultwarden.fullname" . }}
+  labels:
+    {{- include "vaultwarden.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: vaultwarden
+  selector:
+    matchLabels:
+      {{- include "vaultwarden.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "vaultwarden.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: vaultwarden
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+          env:
+            - name: DOMAIN
+              value: "https://{{ .Values.domain }}"
+            - name: ROCKET_PORT
+              value: "{{ .Values.service.http.port }}"
+            - name: WEBSOCKET_ENABLED
+              value: "true"
+            - name: WEBSOCKET_PORT
+              value: "{{ .Values.service.ws.port }}"
+          envFrom:
+            - secretRef:
+                name: {{ include "vaultwarden.fullname" . }}-env
+          ports:
+            - name: http
+              protocol: TCP
+              port: {{ .Values.service.http.port }}
+            - name: ws
+              protocol: TCP
+              port: {{ .Values.service.ws.port }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        {{- with .Values.storage.class }}
+        storageClassName: {{ . }}
+        {{- end }}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.storage.size }}
