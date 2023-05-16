@@ -31,19 +31,16 @@ image:
   tag: ""
 
 ingress:
+  # Whether to create an Ingress resource
   enabled: true
+  # Optional ingress class name
   className: ""
   annotations: {}
     # cert-manager.io/cluster-issuer: letsencrypt-prod
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
 
-service:
-  http:
-    port: 3000
-  ws:
-    port: 3012
-
+# Optional resource requests & limits; some recommendations are below
 resources: {}
   # requests:
   #   cpu: 10m
@@ -51,3 +48,17 @@ resources: {}
   # limits:
   #   cpu: '2'
   #   memory: 1Gi
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # Optional name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template.
+  name:
+
+# Service configuration; mostly in here for convienience, you should not have to touch them
+service:
+  http:
+    port: 3000
+  ws:
+    port: 3012
