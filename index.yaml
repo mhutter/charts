@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  vaultwarden:
+  - apiVersion: v2
+    appVersion: 1.28.1
+    created: "2023-05-16T13:53:40.54981909Z"
+    description: Unofficial Bitwarden compatible server written in Rust
+    digest: 53bf0c9f9816dad4800ec7b19422308e2e4c80399b10683c10a3c12f8c87fcfd
+    name: vaultwarden
+    type: application
+    urls:
+    - https://github.com/mhutter/charts/releases/download/vaultwarden-0.1.0/vaultwarden-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-05-16T13:53:40.54982819Z"
